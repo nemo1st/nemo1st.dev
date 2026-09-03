@@ -178,7 +178,7 @@ async function build() {
   const facts = [["backend", "Python / Rails / .NET"], ["infra", "設計・構築・保守"], ["ci/cd", "GitHub Actions"], ["workflow", "AI 開発効率化"], ["community", "技術支援"], ["next gen", "コンテスト支援"]];
   const interview = [
     ["まず、何をしている人ですか？", "Webアプリケーション開発を中心に、インフラやデータ構造の解析まで幅広く手を動かすソフトウェアエンジニアです。「仕組みを知り、仕組みを最適化する」のが好きなWebエンジニアです。"],
-    ["得意領域と技術スタックを教えてください。", `<dl class="stack-list"><div><dt>Backend</dt><dd>Python, Ruby on Rails, .NET</dd></div><div><dt>Infrastructure &amp; Ops</dt><dd>サーバー設計・構築、ドメイン管理、ランタイムやフレームワークのバージョンアップ・保守運用</dd></div><div><dt>CI/CD</dt><dd>GitHub Actionsを活用したビルド・テスト・デプロイの自動化</dd></div><div><dt>Workflow &amp; AI</dt><dd>GitHub Issue / PR の自動化パイプライン、AIアシスタントを活用した開発効率化</dd></div></dl>`],
+    ["得意領域と技術スタックを教えてください。", `<dl class="stack-list"><div><dt>Backend</dt><dd>Python, Ruby on Rails, .NET</dd></div><div><dt>Infrastructure &amp; Ops</dt><dd>サーバー設計・構築、ドメイン管理、ランタイムやフレームワークのバージョンアップ・保守運用</dd></div><div><dt>CI/CD</dt><dd>GitHub Actionsを活用したビルド・テスト・デプロイの自動化</dd></div><div><dt>Workflow &amp; AI</dt><dd>AIアシスタントを活用した要件整理・実装・レビューの効率化</dd></div></dl>`],
     ["強みとスタンスは？", "ブラックボックスになりがちなライブラリの内部挙動やデータ構造を徹底的に読み解き、根本原因を解決するトラブルシューティングを得意としています。また、安定した長期運用を見据えたリファクタリングや環境移行を確実にやり遂げる推進力があります。"],
     ["仕事以外では何をしていますか？", "趣味でもコミュニティ向けのツール開発やゲームデータ解析など、手を動かして形にすることに情熱を注いでいます。技術コミュニティへの還元や、中高生向けプログラミングコンテストの支援など、次世代育成にも取り組んでいます。"],
   ];
