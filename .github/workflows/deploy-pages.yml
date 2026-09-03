@@ -25,7 +25,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm run build
+      - name: Build static site
+        run: npm run build
+        env:
+          SITE_URL: https://nemo1st.github.io/nemo1st.dev
+          BASE_PATH: /nemo1st.dev
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

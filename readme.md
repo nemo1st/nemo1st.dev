@@ -19,6 +19,10 @@ Matter and body, then set `draft: false`. Pushing to the `main` branch runs
 settings, select **GitHub Actions** as the Pages source. The build emits `CNAME` for `nemo1st.dev`; DNS
 still needs to point the domain at GitHub Pages before the custom domain becomes live.
 
+The GitHub Pages workflow currently publishes at `https://nemo1st.github.io/nemo1st.dev/` with
+`BASE_PATH=/nemo1st.dev`. After the custom-domain DNS is configured, change `SITE_URL` to
+`https://nemo1st.dev`, remove `BASE_PATH`, and set `CUSTOM_DOMAIN=nemo1st.dev` in the workflow.
+
 The generator is dependency-free and lives in `scripts/build.mjs`. It also creates article metadata,
 Open Graph/Twitter metadata, RSS, `sitemap.xml`, `robots.txt`, and a 404 page.
 

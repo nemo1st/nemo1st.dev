@@ -6,6 +6,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT = path.join(ROOT, "content", "blog");
 const DIST = path.join(ROOT, "dist");
 const SITE_URL = (process.env.SITE_URL || "https://nemo1st.dev").replace(/\/$/, "");
+const BASE_PATH = (process.env.BASE_PATH || "").replace(/^\/?/, "/").replace(/\/$/, "").replace(/^\/$/, "");
+const CUSTOM_DOMAIN = (process.env.CUSTOM_DOMAIN || "").trim();
 const SITE_NAME = "nemo1st.dev";
 const GITHUB_URL = "https://github.com/nemo1st";
 
@@ -66,6 +68,11 @@ function safeHref(value) {
   return /^(https?:\/\/|\/|#)/.test(href) ? href : "#";
 }
 
+function sitePath(pathname) {
+  if (!pathname.startsWith("/")) return pathname;
+  return `${BASE_PATH}${pathname}` || "/";
+}
+
 function renderInline(text) {
   const pattern = /(`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
   return String(text).split(pattern).filter(Boolean).map((part) => {
@@ -75,7 +82,7 @@ function renderInline(text) {
     if (link) {
       const href = safeHref(link[2]);
       const external = /^https?:\/\//.test(href);
-      return `<a href="${escapeHtml(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${escapeHtml(link[1])}</a>`;
+      return `<a href="${escapeHtml(external || href.startsWith("#") ? href : sitePath(href))}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${escapeHtml(link[1])}</a>`;
     }
     return escapeHtml(part);
   }).join("");
@@ -127,7 +134,8 @@ function renderMarkdown(markdown) {
 
     const image = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
     if (image) {
-      blocks.push(`<figure><img src="${escapeHtml(safeHref(image[2]))}" alt="${escapeHtml(image[1])}" loading="lazy"><figcaption>${escapeHtml(image[1])}</figcaption></figure>`);
+      const src = safeHref(image[2]);
+      blocks.push(`<figure><img src="${escapeHtml(src.startsWith("/") ? sitePath(src) : src)}" alt="${escapeHtml(image[1])}" loading="lazy"><figcaption>${escapeHtml(image[1])}</figcaption></figure>`);
       index += 1;
       continue;
     }
@@ -167,7 +175,7 @@ function absoluteUrl(pathname) {
 }
 
 function navLink(href, label, current) {
-  return `<a href="${href}"${current === href ? ' aria-current="page"' : ""}>${label}</a>`;
+  return `<a href="${sitePath(href)}"${current === href ? ' aria-current="page"' : ""}>${label}</a>`;
 }
 
 function layout({ title, description, pathname, current = "", body, type = "website", date, jsonLd }) {
@@ -178,16 +186,16 @@ function layout({ title, description, pathname, current = "", body, type = "webs
 <html lang="ja"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(fullTitle)}</title><meta name="description" content="${escapeHtml(description)}">
-<link rel="canonical" href="${canonical}"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/site.css">
+<link rel="canonical" href="${canonical}"><link rel="stylesheet" href="${sitePath("/styles.css")}"><link rel="stylesheet" href="${sitePath("/site.css")}">
 <meta property="og:type" content="${type}"><meta property="og:site_name" content="${SITE_NAME}"><meta property="og:title" content="${escapeHtml(fullTitle)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${ogImage}">
 ${date ? `<meta property="article:published_time" content="${escapeHtml(date)}">` : ""}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(fullTitle)}"><meta name="twitter:description" content="${escapeHtml(description)}"><meta name="twitter:image" content="${ogImage}">
 <script>try{const t=localStorage.getItem("nemo-theme")||"system";document.documentElement.classList.toggle("dark",t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))}catch{}</script>
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replaceAll("<", "\\u003c")}</script>` : ""}</head>
 <body><a class="skip-link" href="#main">本文へ移動</a>
-<header class="site-header"><div class="header-inner"><a class="wordmark" href="/">${SITE_NAME}</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="メニューを開く" aria-expanded="false">menu</button><nav class="site-nav" data-site-nav aria-label="メインナビゲーション">${navLink("/blog/", "blog", current)}${navLink("/about/", "about", current)}<a href="${GITHUB_URL}" target="_blank" rel="noopener noreferrer">github</a></nav><div class="nav-actions"><button class="theme-toggle" type="button" data-theme-toggle aria-label="テーマを切り替える">system</button></div></div></header>
+<header class="site-header"><div class="header-inner"><a class="wordmark" href="${sitePath("/")}">${SITE_NAME}</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="メニューを開く" aria-expanded="false">menu</button><nav class="site-nav" data-site-nav aria-label="メインナビゲーション">${navLink("/blog/", "blog", current)}${navLink("/about/", "about", current)}<a href="${GITHUB_URL}" target="_blank" rel="noopener noreferrer">github</a></nav><div class="nav-actions"><button class="theme-toggle" type="button" data-theme-toggle aria-label="テーマを切り替える">system</button></div></div></header>
 ${body}
 <footer class="site-footer"><div class="container footer-inner"><span>© ${new Date().getFullYear()} nemo1st</span><span>Built from Markdown on GitHub.</span></div></footer>
-<script src="/site.js" defer></script></body></html>`;
+<script src="${sitePath("/site.js")}" defer></script></body></html>`;
 }
 
 function tagsHtml(tags) {
@@ -195,7 +203,7 @@ function tagsHtml(tags) {
 }
 
 function postCard(post) {
-  return `<article class="post-card"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h2><a href="/blog/${encodeURIComponent(post.slug)}/">${escapeHtml(post.title)}</a></h2><p>${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</article>`;
+  return `<article class="post-card"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h2><a href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}">${escapeHtml(post.title)}</a></h2><p>${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</article>`;
 }
 
 async function writePage(relative, html) {
@@ -211,7 +219,7 @@ async function copyStaticAssets() {
   await cp(path.join(ROOT, "styles.css"), path.join(DIST, "styles.css"));
   await cp(path.join(ROOT, "site", "site.css"), path.join(DIST, "site.css"));
   await cp(path.join(ROOT, "site", "site.js"), path.join(DIST, "site.js"));
-  await writeFile(path.join(DIST, "CNAME"), "nemo1st.dev\n", "utf8");
+  if (CUSTOM_DOMAIN) await writeFile(path.join(DIST, "CNAME"), `${CUSTOM_DOMAIN}\n`, "utf8");
 }
 
 async function loadPosts() {
@@ -235,7 +243,7 @@ async function build() {
   const posts = await loadPosts();
 
   const latest = posts.slice(0, 4);
-  const homeBody = `<main id="main"><section class="hero"><div class="container hero-grid"><div><p class="eyebrow">Software Engineer</p><h1>Hey, I’m nemo1st.</h1><p class="hero-copy">Web開発から低レイヤー、データ構造解析、開発自動化まで。仕組みを深掘りしてハックするのが好きです。</p><div class="hero-actions"><a class="button button-primary" href="/blog/">Read the blog</a><a class="button" href="/about/">About me</a></div></div><img class="hero-avatar" src="/assets/avatar.jpeg" alt="nemo1stのアバター" width="400" height="400"></div></section><section class="section"><div class="container"><div class="section-heading"><h2>Latest articles</h2><a href="/blog/">すべて見る →</a></div>${latest.length ? `<div class="post-grid">${latest.map(postCard).join("")}</div>` : '<div class="empty">公開済みの記事はまだありません。</div>'}</div></section></main>`;
+  const homeBody = `<main id="main"><section class="hero"><div class="container hero-grid"><div><p class="eyebrow">Software Engineer</p><h1>Hey, I’m nemo1st.</h1><p class="hero-copy">Web開発から低レイヤー、データ構造解析、開発自動化まで。仕組みを深掘りしてハックするのが好きです。</p><div class="hero-actions"><a class="button button-primary" href="${sitePath("/blog/")}">Read the blog</a><a class="button" href="${sitePath("/about/")}">About me</a></div></div><img class="hero-avatar" src="${sitePath("/assets/avatar.jpeg")}" alt="nemo1stのアバター" width="400" height="400"></div></section><section class="section"><div class="container"><div class="section-heading"><h2>Latest articles</h2><a href="${sitePath("/blog/")}">すべて見る →</a></div>${latest.length ? `<div class="post-grid">${latest.map(postCard).join("")}</div>` : '<div class="empty">公開済みの記事はまだありません。</div>'}</div></section></main>`;
   await writePage("index.html", layout({ title: SITE_NAME, description: "nemo1stのソフトウェアエンジニアリングノート。", pathname: "/", body: homeBody }));
 
   const blogBody = `<main id="main"><section class="page-banner"><div class="container"><h1>Blog</h1><p>読んだ仕様と、手を動かした記録を置いています。</p></div></section><section class="section"><div class="container">${posts.length ? `<div class="post-grid">${posts.map(postCard).join("")}</div>` : '<div class="empty">公開済みの記事はまだありません。</div>'}</div></section></main>`;
@@ -244,12 +252,12 @@ async function build() {
   for (const post of posts) {
     const rendered = renderMarkdown(post.body);
     const toc = rendered.toc.length ? `<aside class="toc" aria-label="目次"><p>Contents</p>${rendered.toc.map((item) => `<a href="#${escapeHtml(item.id)}"${item.level > 2 ? ' style="padding-left:1rem"' : ""}>${escapeHtml(item.text)}</a>`).join("")}</aside>` : "";
-    const articleBody = `<main id="main"><header class="article-header"><div class="prose-container"><div class="breadcrumb"><a href="/blog/">blog</a> &gt; article</div><time class="article-date" datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h1>${escapeHtml(post.title)}</h1><p class="article-description">${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</div></header><div class="article-layout"><article class="article-body">${rendered.html}</article>${toc}</div></main>`;
+    const articleBody = `<main id="main"><header class="article-header"><div class="prose-container"><div class="breadcrumb"><a href="${sitePath("/blog/")}">blog</a> &gt; article</div><time class="article-date" datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h1>${escapeHtml(post.title)}</h1><p class="article-description">${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</div></header><div class="article-layout"><article class="article-body">${rendered.html}</article>${toc}</div></main>`;
     const jsonLd = { "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.description, datePublished: post.date, author: { "@type": "Person", name: "nemo1st", url: GITHUB_URL }, mainEntityOfPage: absoluteUrl(`/blog/${post.slug}/`) };
     await writePage(`blog/${post.slug}/index.html`, layout({ title: post.title, description: post.description, pathname: `/blog/${post.slug}/`, current: "/blog/", body: articleBody, type: "article", date: post.date, jsonLd }));
   }
 
-  const aboutBody = `<main id="main"><section class="section"><div class="container about-grid"><img class="about-avatar" src="/assets/avatar.jpeg" alt="nemo1stのアバター" width="400" height="400"><div class="about-copy"><p class="eyebrow">About</p><h1>nemo1st</h1><p>仕組みを深掘りしてハックするのが好きなソフトウェアエンジニアです。Web開発、低レイヤー、データ構造解析、開発自動化について記録しています。</p><p><a class="button" href="${GITHUB_URL}" target="_blank" rel="noopener noreferrer">GitHubを見る →</a></p></div></div></section></main>`;
+  const aboutBody = `<main id="main"><section class="section"><div class="container about-grid"><img class="about-avatar" src="${sitePath("/assets/avatar.jpeg")}" alt="nemo1stのアバター" width="400" height="400"><div class="about-copy"><p class="eyebrow">About</p><h1>nemo1st</h1><p>仕組みを深掘りしてハックするのが好きなソフトウェアエンジニアです。Web開発、低レイヤー、データ構造解析、開発自動化について記録しています。</p><p><a class="button" href="${GITHUB_URL}" target="_blank" rel="noopener noreferrer">GitHubを見る →</a></p></div></div></section></main>`;
   await writePage("about/index.html", layout({ title: "About", description: "nemo1stについて。", pathname: "/about/", current: "/about/", body: aboutBody }));
 
   const urls = ["/", "/blog/", "/about/", ...posts.map((post) => `/blog/${post.slug}/`)];
@@ -260,7 +268,7 @@ async function build() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>${SITE_NAME}</title><link>${SITE_URL}</link><description>Software engineering notes</description>${posts.map((post) => `<item><title>${escapeXml(post.title)}</title><link>${escapeXml(absoluteUrl(`/blog/${post.slug}/`))}</link><guid>${escapeXml(absoluteUrl(`/blog/${post.slug}/`))}</guid><pubDate>${new Date(`${post.date}T00:00:00Z`).toUTCString()}</pubDate><description>${escapeXml(post.description)}</description></item>`).join("")}</channel></rss>\n`;
   await writeFile(path.join(DIST, "rss.xml"), rss, "utf8");
 
-  const notFound = `<main id="main"><section class="section"><div class="prose-container"><p class="eyebrow">404</p><h1>ページが見つかりません</h1><p><a href="/">トップへ戻る</a></p></div></section></main>`;
+  const notFound = `<main id="main"><section class="section"><div class="prose-container"><p class="eyebrow">404</p><h1>ページが見つかりません</h1><p><a href="${sitePath("/")}">トップへ戻る</a></p></div></section></main>`;
   await writePage("404.html", layout({ title: "404", description: "ページが見つかりません。", pathname: "/404.html", body: notFound }));
   console.log(`Built ${posts.length} article(s) into dist/`);
 }
