@@ -71,4 +71,59 @@
     button.textContent = "コピーしました";
     setTimeout(() => { button.textContent = original; }, 1600);
   });
+
+  const interview = document.querySelector("[data-interview]");
+  if (interview) {
+    const items = [...interview.querySelectorAll("[data-interview-item]")];
+    const skip = interview.querySelector("[data-interview-skip]");
+    const ending = interview.querySelector("[data-interview-end]");
+    const originals = new Map(items.map((item) => {
+      const target = item.querySelector("[data-interview-text]");
+      return [item, target?.textContent || ""];
+    }));
+    let cancelled = false;
+    const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+    const showAll = () => {
+      cancelled = true;
+      items.forEach((item) => {
+        item.hidden = false;
+        const target = item.querySelector("[data-interview-text]");
+        if (target) target.textContent = originals.get(item);
+      });
+      ending.hidden = false;
+      skip.hidden = true;
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      showAll();
+    } else {
+      items.forEach((item) => { item.hidden = true; });
+      ending.hidden = true;
+      skip.addEventListener("click", showAll);
+      (async () => {
+        for (const item of items) {
+          if (cancelled) return;
+          item.hidden = false;
+          const target = item.querySelector("[data-interview-text]");
+          if (target) {
+            const full = originals.get(item);
+            const text = document.createTextNode("");
+            const cursor = document.createElement("span");
+            cursor.className = "typing-cursor";
+            cursor.setAttribute("aria-hidden", "true");
+            target.replaceChildren(text, cursor);
+            for (let index = 1; index <= full.length; index += 1) {
+              if (cancelled) return;
+              text.data = full.slice(0, index);
+              await wait(12);
+            }
+            cursor.remove();
+          }
+          await wait(420);
+        }
+        ending.hidden = false;
+        skip.hidden = true;
+      })();
+    }
+  }
 })();
