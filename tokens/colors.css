@@ -1,0 +1,99 @@
+:root{
+  /* ---- base: stone is the ONLY grey ramp ---- */
+  --stone-50:oklch(98.5% 0.001 106.423);
+  --stone-100:oklch(97% 0.001 106.424);
+  --stone-200:oklch(92.3% 0.003 48.717);
+  --stone-300:oklch(86.9% 0.005 56.366);
+  --stone-400:oklch(70.9% 0.01 56.259);
+  --stone-500:oklch(55.3% 0.013 58.071);
+  --stone-600:oklch(44.4% 0.011 73.639);
+  --stone-700:oklch(37.4% 0.01 67.558);
+  --stone-800:oklch(26.8% 0.007 34.298);
+  --stone-900:oklch(21.6% 0.006 56.043);
+  --stone-950:oklch(14.7% 0.004 49.25);
+  --white:#fff;
+
+  /* ---- base: single accent hue (244°), two lightness variants ----
+     Taken from the brand icon's flat background, #39617a. */
+  --brand-ink:#39617a;
+  --brand-sand:#93826a;
+  --color-accent:oklch(50% 0.070 244);
+  --color-accent-light:oklch(78% 0.110 244);
+
+  /* Secondary accent — the icon's body khaki. Structural only: quiet rules,
+     transcript indents, small marks. Never a fill, never a second link colour. */
+  --color-accent-2:oklch(58% 0.035 82);
+  --color-accent-2-light:oklch(78% 0.045 82);
+  --accent-2-wash-8:color-mix(in oklch, var(--color-accent-2) 8%, transparent);
+
+  /* accent washes — derived, never hand-picked */
+  --accent-wash-8:color-mix(in oklch, var(--color-accent) 8%, transparent);
+  --accent-wash-10:color-mix(in oklch, var(--color-accent) 10%, transparent);
+
+  /* ---- semantic aliases (light) ---- */
+  --surface-page:var(--stone-50);
+  --surface-card:var(--white);
+  --surface-raised:var(--stone-100);
+  --surface-inverse:var(--stone-900);
+  --surface-hover:var(--stone-100);
+
+  --text-primary:var(--stone-900);
+  --text-body:var(--stone-800);
+  --text-secondary:var(--stone-600);
+  --text-muted:var(--stone-400);
+  --text-on-accent:var(--white);
+  --text-on-inverse:var(--white);
+  --text-link:var(--color-accent);
+
+  --border-default:var(--stone-200);
+  --border-subtle:var(--stone-100);
+  --border-strong:var(--stone-300);
+  --border-active:var(--color-accent);
+
+  /* ---- semantic: alert palettes (the only non-stone, non-accent colors) ---- */
+  --alert-note-border:oklch(54.6% 0.245 262.881);
+  --alert-note-bg:oklch(97% 0.014 254.604);
+  --alert-note-text:oklch(54.6% 0.245 262.881);
+  --alert-warning-border:oklch(55.4% 0.135 66.442);
+  --alert-warning-bg:oklch(98.7% 0.026 102.212);
+  --alert-warning-text:oklch(55.4% 0.135 66.442);
+  --alert-error-border:oklch(50.5% 0.213 27.518);
+  --alert-error-bg:oklch(97.1% 0.013 17.38);
+  --alert-error-text:oklch(50.5% 0.213 27.518);
+  --alert-tip-border:oklch(52.7% 0.154 150.069);
+  --alert-tip-bg:oklch(98.2% 0.018 155.826);
+  --alert-tip-text:oklch(52.7% 0.154 150.069);
+}
+
+.dark{
+  --color-accent-2:var(--color-accent-2-light);
+  --surface-page:var(--stone-950);
+  --surface-card:var(--stone-900);
+  --surface-raised:var(--stone-800);
+  --surface-inverse:var(--stone-100);
+  --surface-hover:var(--stone-800);
+
+  --text-primary:var(--stone-100);
+  --text-body:var(--stone-100);
+  --text-secondary:var(--stone-400);
+  --text-muted:var(--stone-500);
+  --text-on-inverse:var(--stone-900);
+  --text-link:var(--color-accent-light);
+
+  --border-default:var(--stone-800);
+  --border-subtle:var(--stone-900);
+  --border-strong:var(--stone-600);
+
+  --alert-note-bg:oklch(28.2% 0.091 267.935);
+  --alert-note-text:oklch(70.7% 0.165 254.624);
+  --alert-note-border:oklch(70.7% 0.165 254.624);
+  --alert-warning-bg:oklch(27.9% 0.077 45.635);
+  --alert-warning-text:oklch(79.5% 0.184 86.047);
+  --alert-warning-border:oklch(79.5% 0.184 86.047);
+  --alert-error-bg:oklch(25.8% 0.092 26.042);
+  --alert-error-text:oklch(70.4% 0.191 22.216);
+  --alert-error-border:oklch(70.4% 0.191 22.216);
+  --alert-tip-bg:oklch(26.6% 0.065 152.934);
+  --alert-tip-text:oklch(79.2% 0.209 151.711);
+  --alert-tip-border:oklch(79.2% 0.209 151.711);
+}

@@ -1,0 +1,5 @@
+/* Webfonts are loaded from Google Fonts — the source repo ships no local binaries.
+   Display: Bricolage Grotesque 600/800 (optical size axis 12..96)
+   Mono:    JetBrains Mono 400/500
+   Body:    no webfont. The OS default sans-serif is used on purpose (see readme.md). */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap");

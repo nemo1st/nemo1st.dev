@@ -1,0 +1,22 @@
+:root{
+  /* Depth is expressed with BORDERS, not shadows (DESIGN.md §6).
+     These three shadows exist only for elements that physically float. */
+  --shadow-fab:0 10px 15px -3px rgb(0 0 0 / .1),0 4px 6px -4px rgb(0 0 0 / .1);
+  --shadow-dropdown:0 4px 6px -1px rgb(0 0 0 / .1),0 2px 4px -2px rgb(0 0 0 / .1);
+  --shadow-dialog:0 10px 15px -3px rgb(0 0 0 / .1),0 4px 6px -4px rgb(0 0 0 / .1);
+
+  /* layer scale (DESIGN.md §11) — never invent an ad-hoc z-index */
+  --z-base:0; /* @kind other */
+  --z-raised:10; /* @kind other */
+  --z-sticky:40; /* @kind other */
+  --z-overlay:50; /* @kind other */
+  --z-dialog:60; /* @kind other */
+  --z-ephemeral:70; /* @kind other */
+
+  /* motion: only transition-colors / transition-opacity / transform. Never transition-all. */
+  --duration-fast:150ms; /* @kind other */
+  --duration:200ms; /* @kind other */
+  --duration-slow:300ms; /* @kind other */
+  --ease:ease-out; /* @kind other */
+  --ease-inout:ease-in-out; /* @kind other */
+}

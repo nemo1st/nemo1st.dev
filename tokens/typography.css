@@ -1,0 +1,42 @@
+:root{
+  /* families — body deliberately delegates to the OS sans-serif.
+     NEVER add system-ui: on Japanese Windows it resolves to Yu Gothic UI. */
+  /* Body copy has no webfont on purpose (DESIGN.md §3): the generic `sans-serif` lets each
+     OS pick its own — Hiragino Kaku Gothic ProN on Apple, Noto Sans JP on Windows/Android —
+     and respects user font settings such as dyslexia-friendly faces.
+     NEVER add system-ui: on Japanese Windows it resolves to Yu Gothic UI. */
+  --font-sans:sans-serif;
+  --font-display:"Bricolage Grotesque",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+
+  /* size ramp (rem so browser text scaling works) */
+  --text-xs:0.75rem;
+  --text-sm:0.875rem;
+  --text-base:1rem;
+  --text-lg:1.125rem;
+  --text-xl:1.25rem;
+  --text-2xl:1.5rem;
+  --text-3xl:1.875rem;
+  --text-4xl:2.25rem;
+  --text-5xl:3rem;
+  --text-6xl:3.75rem;
+
+  /* article body: wider leading than latin defaults, for 和文 */
+  --article-size:1rem;
+  --article-size-md:1.0625rem;
+  --article-leading:1.9;
+  --article-leading-md:2;
+  --article-tracking-md:0.01em;
+
+  --leading-tight:1.15;
+  --leading-relaxed:1.625;
+
+  /* the editorial section label: mono, uppercase, wide */
+  --tracking-label:0.2em;
+
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+  --weight-display:800;
+}

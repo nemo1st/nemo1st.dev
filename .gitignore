@@ -1,0 +1,17 @@
+dist/
+node_modules/
+__pycache__/
+.DS_Store
+
+# Local design-system source and Codex tooling are not part of the published site.
+.codex/
+.thumbnail
+_adherence.oxlintrc.json
+_ds_bundle.js
+_ds_manifest.json
+SKILL.md
+components/
+guidelines/
+thumbnail.html
+ui_kits/
+uploads/
