@@ -14,14 +14,10 @@ npm run dev
 ```
 
 To add an article, copy `content/blog/_template.md`, rename it to the desired URL slug, edit the Front
-Matter and body, then set `draft: false`. Pushing to the `main` branch runs
-`.github/workflows/deploy-pages.yml`, which builds and deploys `dist/` to GitHub Pages. In the repository
-settings, select **GitHub Actions** as the Pages source. The build emits `CNAME` for `nemo1st.dev`; DNS
-still needs to point the domain at GitHub Pages before the custom domain becomes live.
-
-The GitHub Pages workflow currently publishes at `https://nemo1st.github.io/nemo1st.dev/` with
-`BASE_PATH=/nemo1st.dev`. After the custom-domain DNS is configured, change `SITE_URL` to
-`https://nemo1st.dev`, remove `BASE_PATH`, and set `CUSTOM_DOMAIN=nemo1st.dev` in the workflow.
+Matter and body, then set `draft: false`. The site is hosted on Vercel with `nemo1st.dev` as its
+production domain. Pushing to the connected production branch builds the site with `npm run build`
+and publishes `dist/`. Pull requests receive Vercel preview deployments, while GitHub Actions verifies
+that the static build succeeds.
 
 The generator is dependency-free and lives in `scripts/build.mjs`. It also creates article metadata,
 Open Graph/Twitter metadata, RSS, `sitemap.xml`, `robots.txt`, and a 404 page.

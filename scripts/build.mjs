@@ -11,7 +11,7 @@ const CUSTOM_DOMAIN = (process.env.CUSTOM_DOMAIN || "").trim();
 const SITE_NAME = "nemo1st.dev";
 const GITHUB_URL = "https://github.com/nemo1st";
 const SHORTS = [
-  { title: "Markdownをpushすると記事ページができる", date: "2026-09-03", body: "content/blog に原稿を置くと、GitHub Actions が静的HTML・RSS・サイトマップをまとめて生成します。" },
+  { title: "Markdownをpushすると記事ページができる", date: "2026-09-03", body: "content/blog に原稿を置いてpushすると、Vercelが静的HTML・RSS・サイトマップをまとめて生成・公開します。" },
   { title: "下書きもGitHubで管理する", date: "2026-09-03", body: "Front Matter の draft を true にすれば、履歴は残したまま公開対象から外せます。" },
 ];
 
@@ -118,7 +118,7 @@ function renderMarkdown(markdown) {
 
 function navLink(href, label, current) { return `<a href="${sitePath(href)}"${current === href ? ' aria-current="page"' : ""}>${label}</a>`; }
 function footer() {
-  return `<footer class="site-footer"><div class="container footer-main"><div class="footer-brand"><a class="footer-title" href="${sitePath("/")}">${SITE_NAME}</a><p>仕組みを深掘りしてハックするのが好きなソフトウェアエンジニアの記録です。</p><div class="socials"><a href="${GITHUB_URL}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">${icon("github")}</a><a href="${sitePath("/rss.xml")}" aria-label="RSS">${icon("rss")}</a></div></div><div class="footer-columns"><div><h2>Content</h2><a href="${sitePath("/blog/")}">Blog</a><a href="${sitePath("/blog/#shorts")}">Shorts</a><a href="${sitePath("/talks/")}">Talks</a></div><div><h2>Site</h2><a href="${sitePath("/about/")}">About</a><a href="${sitePath("/rss.xml")}">RSS</a><a href="${sitePath("/llms.txt")}">llms.txt</a></div></div></div><div class="container footer-bottom"><span>© ${new Date().getFullYear()} nemo1st</span><span>Markdown + GitHub Pages</span></div></footer>`;
+  return `<footer class="site-footer"><div class="container footer-main"><div class="footer-brand"><a class="footer-title" href="${sitePath("/")}">${SITE_NAME}</a><p>仕組みを深掘りしてハックするのが好きなソフトウェアエンジニアの記録です。</p><div class="socials"><a href="${GITHUB_URL}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">${icon("github")}</a><a href="${sitePath("/rss.xml")}" aria-label="RSS">${icon("rss")}</a></div></div><div class="footer-columns"><div><h2>Content</h2><a href="${sitePath("/blog/")}">Blog</a><a href="${sitePath("/blog/#shorts")}">Shorts</a><a href="${sitePath("/talks/")}">Talks</a></div><div><h2>Site</h2><a href="${sitePath("/about/")}">About</a><a href="${sitePath("/rss.xml")}">RSS</a><a href="${sitePath("/llms.txt")}">llms.txt</a></div></div></div><div class="container footer-bottom"><span>© ${new Date().getFullYear()} nemo1st</span><span>Markdown + Vercel</span></div></footer>`;
 }
 
 let searchPosts = [];

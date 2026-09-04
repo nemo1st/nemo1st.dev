@@ -7,6 +7,6 @@
     "dev": "node scripts/dev.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   }
 }

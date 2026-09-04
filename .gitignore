@@ -1,5 +1,6 @@
 dist/
 node_modules/
+.vercel/
 __pycache__/
 .DS_Store
 
