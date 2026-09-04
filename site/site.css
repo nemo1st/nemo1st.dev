@@ -67,6 +67,7 @@ img{max-width:100%}
 .short-item{display:grid;grid-template-columns:48px 1fr;gap:1rem;padding:1.25rem}.short-item+.short-item{border-top:1px solid var(--border-default)}
 .short-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover}.short-head{display:flex;justify-content:space-between;gap:1rem}.short-head strong{font-size:.875rem;color:var(--text-primary)}
 .short-head h3{margin:.2rem 0 0;font-size:1.125rem;line-height:1.3;color:var(--text-primary)}.short-item p{margin:1rem 0 0;font-size:.9375rem;color:var(--text-body)}
+.short-image{display:block;width:100%;height:auto;margin-top:1rem;border:1px solid var(--border-default);border-radius:var(--radius-lg)}
 .thread-button{display:inline-flex;margin-top:1rem;border:1px solid var(--border-strong);border-radius:var(--radius);padding:.3rem .7rem;font-size:.75rem;color:var(--text-secondary)}.thread-button b{margin-left:.5rem}
 
 /* Timeline */
