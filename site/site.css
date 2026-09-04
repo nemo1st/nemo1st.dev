@@ -241,3 +241,8 @@ img{max-width:100%}
 .site-intro .intro-brand h1.is-formed .intro-logo-glyph{color:inherit;-webkit-text-stroke:0 transparent}
 @media (max-width:48em){.site-intro .intro-brand{padding-inline:1rem}.site-intro .intro-brand h1{font-size:clamp(3.5rem,18vw,5.6rem)}.site-intro .intro-brand>p{margin-top:.85rem;padding-top:.5rem;font-size:.54rem;letter-spacing:.12em}}
 .site-intro .intro-identity,.site-intro .intro-interface{border-radius:0}
+
+@media (min-width:48.01em){
+  .site-intro .intro-deck{inset:0;gap:0}
+  .site-intro .intro-identity{border-right:0}
+}
