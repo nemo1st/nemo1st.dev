@@ -36,7 +36,7 @@
     const introSteps = [...document.querySelectorAll("[data-intro-step]")];
     const stageSpecs = [
       { name: "SIGNAL", detail: "identity handshake", log: "SIGNAL / Identity handshake accepted." },
-      { name: "MORPH", detail: "kinetic glyph forge", log: "MORPH / Forging kinetic glyph field." },
+      { name: "MORPH", detail: "geometric mark construction", log: "MORPH / Plotting geometric construction field." },
       { name: "ARCHIVE", detail: "memory constellation", log: "ARCHIVE / Mapping memory constellation." },
       { name: "GATE", detail: "interface release", log: "GATE / Releasing interface threshold." },
     ];
@@ -58,10 +58,38 @@
     if (startupTitle) startupTitle.textContent = "IDENTITY RECONSTRUCTION / PHASE 01";
     if (startupDetail) startupDetail.textContent = "PRIVATE SIGNAL NODE: NEMO1ST / MEMORY ACCESS: LOCAL ONLY";
     const introLogo = intro?.querySelector(".intro-brand h1");
-    const introOrbit = intro?.querySelector(".intro-brand .hero-orbit");
     const introLogoGlyphs = [];
+    let introBlueprint;
+    let introBlueprintLines = [];
+    let introBlueprintGuides = [];
     if (introLogo) {
       introLogo.setAttribute("aria-label", "nemo1st");
+      introBlueprint = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      introBlueprint.classList.add("intro-blueprint");
+      introBlueprint.setAttribute("viewBox", "0 0 1000 620");
+      introBlueprint.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      introBlueprint.setAttribute("aria-hidden", "true");
+      introBlueprint.innerHTML = `
+        <g class="blueprint-guides">
+          <circle cx="500" cy="310" r="272" pathLength="1"/><circle cx="500" cy="310" r="184" pathLength="1"/><circle cx="500" cy="310" r="82" pathLength="1"/>
+          <line x1="50" y1="160" x2="950" y2="160" pathLength="1"/><line x1="50" y1="310" x2="950" y2="310" pathLength="1"/><line x1="50" y1="460" x2="950" y2="460" pathLength="1"/>
+          <line x1="500" y1="28" x2="500" y2="592" pathLength="1"/><line x1="110" y1="84" x2="890" y2="536" pathLength="1"/><line x1="110" y1="536" x2="890" y2="84" pathLength="1"/>
+        </g>
+        <g class="blueprint-structure">
+          <rect x="126" y="176" width="748" height="268" pathLength="1"/>
+          <line x1="126" y1="444" x2="304" y2="176" pathLength="1"/><line x1="148" y1="444" x2="326" y2="176" pathLength="1"/><line x1="170" y1="444" x2="348" y2="176" pathLength="1"/>
+          <line x1="304" y1="176" x2="482" y2="444" pathLength="1"/><line x1="326" y1="176" x2="504" y2="444" pathLength="1"/><line x1="348" y1="176" x2="526" y2="444" pathLength="1"/>
+          <line x1="474" y1="444" x2="652" y2="176" pathLength="1"/><line x1="496" y1="444" x2="674" y2="176" pathLength="1"/><line x1="518" y1="444" x2="696" y2="176" pathLength="1"/>
+          <line x1="652" y1="176" x2="830" y2="444" pathLength="1"/><line x1="674" y1="176" x2="852" y2="444" pathLength="1"/><line x1="696" y1="176" x2="874" y2="444" pathLength="1"/>
+        </g>`;
+      introLogo.before(introBlueprint);
+      introBlueprintLines = [...introBlueprint.querySelectorAll(".blueprint-structure line,.blueprint-structure rect")];
+      introBlueprintGuides = [...introBlueprint.querySelectorAll(".blueprint-guides circle,.blueprint-guides line")];
+      introBlueprintLines.forEach((line) => {
+        line.style.strokeDasharray = "1";
+        line.style.strokeDashoffset = "1";
+      });
+      introBlueprintGuides.forEach((guide) => { guide.style.opacity = "0"; });
       const makeLogoWord = (tagName, text) => {
         const word = document.createElement(tagName);
         word.className = "intro-logo-word";
@@ -215,30 +243,38 @@
     if (finished) intro?.remove(); else document.body.classList.add("intro-running");
     const stageLogs = stageSpecs.map((stage) => stage.log);
     let logoLocked = false;
-    const animateIntroLogo = (progress, now) => {
+    const clamp01 = (value) => Math.max(0, Math.min(1, value));
+    const animateIntroLogo = (progress) => {
       if (!introLogoGlyphs.length) return;
-      const viewportSpread = Math.min(innerWidth, innerHeight) * (innerWidth < 640 ? .09 : .14);
-      introLogoGlyphs.forEach((glyph, index) => {
-        const start = .02 + index * .02;
-        const end = .62 + index * .018;
-        const amount = Math.max(0, Math.min(1, (progress - start) / (end - start)));
-        const formed = amount * amount * (3 - 2 * amount);
-        const chaos = 1 - formed;
-        const seed = index * 1.73 + .8;
-        const angle = seed + progress * (Math.PI * (5.4 + index * .22));
-        const radius = viewportSpread * chaos * (.58 + (index % 3) * .2);
-        const x = Math.cos(angle) * radius + Math.sin(now * .004 + seed) * chaos * 18;
-        const y = Math.sin(angle * 1.13) * radius * .7 + Math.cos(now * .0032 + seed) * chaos * 14;
-        const rotation = chaos * (Math.sin(angle * .72) * 130 + (index % 2 ? 180 : -180));
-        const skew = chaos * Math.sin(angle * 1.4) * 28;
-        const scaleX = 1 + chaos * Math.sin(angle * .91) * .48;
-        const scaleY = 1 + chaos * Math.cos(angle * 1.17) * .36;
-        glyph.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) rotate(${rotation.toFixed(2)}deg) skewX(${skew.toFixed(2)}deg) scale(${scaleX.toFixed(3)},${scaleY.toFixed(3)})`;
-        glyph.style.opacity = String(Math.max(.12, .28 + formed * .72));
+      introBlueprintLines.forEach((line, index) => {
+        const drawn = clamp01((progress - index * .008) / .43);
+        line.style.strokeDashoffset = String(1 - drawn);
       });
-      const orbitChaos = 1 - Math.max(0, Math.min(1, (progress - .08) / .72));
-      if (introOrbit) introOrbit.style.transform = `translateY(-54%) rotate(${(-13 + orbitChaos * 690 + Math.sin(now * .003) * orbitChaos * 16).toFixed(2)}deg) scale(${(1 + orbitChaos * .22 * Math.sin(now * .005)).toFixed(3)})`;
-      if (!logoLocked && progress > .76) {
+      introBlueprintGuides.forEach((guide, index) => {
+        guide.style.opacity = String(clamp01((progress - index * .012) / .24));
+      });
+      if (introBlueprint) {
+        const fade = 1 - clamp01((progress - .68) / .17);
+        introBlueprint.style.opacity = String(fade);
+        introBlueprint.style.setProperty("--blueprint-scale", String(.94 + clamp01(progress / .6) * .06));
+      }
+      const origins = [-185,-128,-62,18,88,148,205];
+      introLogoGlyphs.forEach((glyph, index) => {
+        const start = .2 + index * .025;
+        const end = .64 + index * .012;
+        const amount = clamp01((progress - start) / (end - start));
+        const formed = amount * amount * (3 - 2 * amount);
+        const construction = 1 - formed;
+        const x = origins[index] * construction;
+        const y = (index % 2 ? -138 : 138) * construction;
+        const rotation = (index % 2 ? -9 : 9) * construction;
+        const skew = (index % 2 ? 24 : -24) * construction;
+        const scaleX = .72 + formed * .28;
+        const scaleY = 1.62 - formed * .62;
+        glyph.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) rotate(${rotation.toFixed(2)}deg) skewX(${skew.toFixed(2)}deg) scale(${scaleX.toFixed(3)},${scaleY.toFixed(3)})`;
+        glyph.style.opacity = String(.08 + formed * .92);
+      });
+      if (!logoLocked && progress > .72) {
         logoLocked = true;
         introLogo?.classList.add("is-formed");
       }
@@ -248,7 +284,7 @@
       if (!finished) {
         const progress = Math.min(1, (now - startedAt) / 8200);
         const activeStage = Math.min(introSteps.length - 1, Math.floor(progress * introSteps.length));
-        animateIntroLogo(progress, now);
+        animateIntroLogo(progress);
         if (now - lastIntroDraw >= 32) {
           introScene?.setPointer(Math.sin(now * .00031) * .22, Math.cos(now * .00027) * .16);
           introScene?.draw(now, progress);

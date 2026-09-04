@@ -208,7 +208,7 @@ img{max-width:100%}
 .intro-brand::before{top:38%;animation:logo-scan-a 1.35s ease-in-out infinite alternate}
 .intro-brand::after{top:64%;animation:logo-scan-b 1.7s ease-in-out infinite alternate-reverse}
 .intro-logo-word{position:relative;overflow:visible;white-space:nowrap}
-.intro-logo-glyph{position:relative;display:inline-block;color:inherit;font-style:normal;transform-origin:50% 55%;will-change:transform,filter,opacity}
+.intro-logo-glyph{position:relative;display:inline-block;color:inherit;font-style:normal;transform-origin:50% 55%;will-change:transform,opacity}
 .intro-logo-glyph::after{position:absolute;inset:0;z-index:-1;transform:translate(.055em,.045em) scaleX(1.035);color:transparent;-webkit-text-stroke:1px var(--intro-blue-light);content:attr(data-char);opacity:.55;filter:blur(.35px);transition:opacity .35s ease}
 .intro-brand h1.is-formed{animation:logo-lock .48s cubic-bezier(.16,1,.3,1) both}
 .intro-brand h1.is-formed .intro-logo-glyph::after{opacity:.08}
@@ -227,9 +227,16 @@ img{max-width:100%}
 /* Refined loading wordmark */
 .site-intro .intro-brand{align-content:center;justify-items:center;padding-inline:clamp(1rem,4vw,3rem)}
 .site-intro .intro-brand .hero-orbit,.site-intro .intro-brand::before,.site-intro .intro-brand::after{display:none}
-.site-intro .intro-brand h1{display:inline-flex;align-items:flex-start;max-width:100%;margin:0;font-family:"Helvetica Neue",Arial,var(--font-sans);font-size:clamp(4.75rem,9vw,8.75rem);font-weight:720;line-height:.72;letter-spacing:-.09em;text-transform:lowercase}
+.site-intro .intro-brand h1{position:relative;z-index:2;display:inline-flex;align-items:flex-start;max-width:100%;margin:0;font-family:"Helvetica Neue",Arial,var(--font-sans);font-size:clamp(4.75rem,9vw,8.75rem);font-weight:720;line-height:.72;letter-spacing:-.09em;text-transform:lowercase}
 .site-intro .intro-brand h1 span,.site-intro .intro-brand h1 b{display:inline-flex;margin:0;color:var(--intro-ivory);-webkit-text-stroke:0;text-shadow:none}
 .site-intro .intro-brand h1 b{margin:.05em 0 0 .14em;font-size:.255em;font-weight:700;line-height:1;letter-spacing:.035em;color:var(--intro-blue-light)}
 .site-intro .intro-logo-glyph::after{display:none}
-.site-intro .intro-brand>p{width:100%;max-width:36rem;margin:1.35rem auto 0;padding-top:.75rem;border-top:1px solid rgba(236,233,223,.22);font-size:.72rem;letter-spacing:.2em;text-align:left;color:var(--intro-taupe);text-transform:uppercase}
+.site-intro .intro-brand>p{position:relative;z-index:2;width:100%;max-width:36rem;margin:1.35rem auto 0;padding-top:.75rem;border-top:1px solid rgba(236,233,223,.22);font-size:.72rem;letter-spacing:.2em;text-align:left;color:var(--intro-taupe);text-transform:uppercase}
+.site-intro .intro-blueprint{position:absolute;z-index:0;top:50%;left:50%;width:118%;min-width:32rem;max-width:59rem;overflow:visible;transform:translate(-50%,-50%) scale(var(--blueprint-scale,.94));transform-origin:center;opacity:.72;pointer-events:none}
+.site-intro .intro-blueprint circle,.site-intro .intro-blueprint line,.site-intro .intro-blueprint rect{fill:none;stroke:rgba(236,233,223,.52);stroke-width:1.15;vector-effect:non-scaling-stroke}
+.site-intro .intro-blueprint .blueprint-guides{opacity:.48}
+.site-intro .intro-blueprint .blueprint-guides circle{stroke-dasharray:3 5}
+.site-intro .intro-blueprint .blueprint-structure{opacity:.88}
+.site-intro .intro-logo-glyph{color:transparent;-webkit-text-stroke:1px rgba(236,233,223,.72);transition:color .3s ease,-webkit-text-stroke .3s ease}
+.site-intro .intro-brand h1.is-formed .intro-logo-glyph{color:inherit;-webkit-text-stroke:0 transparent}
 @media (max-width:48em){.site-intro .intro-brand{padding-inline:1rem}.site-intro .intro-brand h1{font-size:clamp(3.5rem,18vw,5.6rem)}.site-intro .intro-brand>p{margin-top:.85rem;padding-top:.5rem;font-size:.54rem;letter-spacing:.12em}}
