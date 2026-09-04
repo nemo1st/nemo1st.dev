@@ -18,8 +18,6 @@ const SHORTS = [
     image: "/assets/shorts/fansite-active-users.png",
     imageAlt: "過去30分のアクティブユーザー数が12人と表示されたアクセス解析画面",
   },
-  { title: "Markdownをpushすると記事ページができる", date: "2026-09-03", body: "content/blog に原稿を置いてpushすると、Vercelが静的HTML・RSS・サイトマップをまとめて生成・公開します。" },
-  { title: "下書きもGitHubで管理する", date: "2026-09-03", body: "Front Matter の draft を true にすれば、履歴は残したまま公開対象から外せます。" },
 ];
 
 const escapeHtml = (value = "") => String(value)
@@ -139,7 +137,17 @@ function layout({ title, description, pathname, current = "", body, type = "webs
 function tagsHtml(tags) { return `<div class="tags">${tags.map((tag) => `<span class="tag">#${escapeHtml(tag)}</span>`).join("")}</div>`; }
 function thumbnail(post, index = 0) { const source = post.thumbnail || `/assets/placeholders/thumb-${(index % 4) + 1}.svg`; return sitePath(source); }
 function postCard(post, index = 0) { return `<article class="post-card"><a class="post-thumb" href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}" tabindex="-1" aria-hidden="true"><img src="${thumbnail(post, index)}" alt="" loading="lazy"></a><div class="post-content"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h3><a href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</div></article>`; }
-function featuredPost(post) { return `<article class="featured-post"><div class="featured-copy"><div class="featured-meta"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><span>Feature</span></div><h3><a href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</div><a class="featured-thumb" href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}" tabindex="-1" aria-hidden="true"><img src="${thumbnail(post)}" alt=""></a></article>`; }
+function featuredPost(post) {
+  const href = sitePath(`/blog/${encodeURIComponent(post.slug)}/`);
+  const visual = post.thumbnail
+    ? `<span class="featured-media"><img src="${thumbnail(post)}" alt=""></span>`
+    : '<span class="featured-index" aria-hidden="true"><b>01</b><i>Latest</i></span>';
+  return `<article class="featured-post"><a class="featured-link" href="${href}">${visual}<div class="featured-copy"><div class="featured-meta"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><span>Featured article</span></div><h3 class="featured-title">${escapeHtml(post.title)}</h3><p class="featured-description">${escapeHtml(post.description)}</p><div class="featured-footer">${tagsHtml(post.tags)}<span class="featured-cta">記事を読む ${icon("arrow-right")}</span></div></div></a></article>`;
+}
+function latestPost(post, index) {
+  const href = sitePath(`/blog/${encodeURIComponent(post.slug)}/`);
+  return `<article class="latest-item"><a href="${href}"><span class="latest-number" aria-hidden="true">${String(index + 2).padStart(2, "0")}</span><div class="latest-summary"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h3>${escapeHtml(post.title)}</h3><p>${escapeHtml(post.description)}</p></div><div class="latest-tail">${tagsHtml(post.tags)}${icon("arrow-right")}</div></a></article>`;
+}
 function sectionHeading(label, href = "", linkLabel = "") { return `<div class="section-heading"><h2>${label}</h2>${href ? `<a href="${sitePath(href)}">${linkLabel} ${icon("arrow-right")}</a>` : ""}</div>`; }
 function shortList(items = SHORTS) { return `<div class="short-list">${items.map((item, i) => `<article class="short-item"><img class="short-avatar" src="${sitePath("/assets/avatar.jpeg")}" alt="" width="40" height="40"><div><div class="short-head"><div><strong>nemo1st</strong><h3>${escapeHtml(item.title)}</h3></div><time datetime="${item.date}">${formatDate(item.date)}</time></div><p>${escapeHtml(item.body)}</p>${item.image ? `<img class="short-image" src="${sitePath(item.image)}" alt="${escapeHtml(item.imageAlt || "")}" loading="lazy">` : ""}${i === 0 ? '<span class="thread-button">スレッドを開く <b>1</b></span>' : ""}</div></article>`).join("")}</div>`; }
 function emptyTimeline() { return `<div class="timeline"><div class="timeline-year">Soon</div><div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-card"><p class="timeline-kicker">Talks archive</p><h3>登壇記録を準備しています</h3><p>公開できる資料やイベントの記録を、ここへ時系列で追加していきます。</p></div></div></div>`; }
@@ -167,7 +175,7 @@ async function build() {
   await rm(DIST, { recursive: true, force: true }); await mkdir(DIST, { recursive: true }); await copyStaticAssets();
   const posts = await loadPosts(); searchPosts = posts;
   const [featured, ...rest] = posts;
-  const homeBody = `<main id="main"><section class="hero"><div class="hero-orb" aria-hidden="true"></div><div class="hero-copy"><p class="eyebrow">Software Engineer</p><h1>Hey, I’m <span>nemo1st</span><i>👋</i></h1><p>Web開発から低レイヤー・データ構造解析、開発自動化まで。仕組みを深掘りしてハックするのが好きです。</p><div class="hero-actions"><a class="button button-primary" href="${sitePath("/blog/")}">Read the blog</a><a class="button" href="${sitePath("/about/")}">About me</a></div></div></section><div class="home-content container"><section>${sectionHeading("Latest articles", "/blog/", "もっと見る")}${featured ? featuredPost(featured) : '<div class="empty">公開済みの記事はまだありません。</div>'}${rest.length ? `<div class="post-grid">${rest.slice(0, 3).map(postCard).join("")}</div>` : ""}</section><section id="shorts">${sectionHeading("Shorts")}${shortList()}</section><section>${sectionHeading("Talks", "/talks/", "すべての登壇")}${emptyTimeline()}</section></div></main>`;
+  const homeBody = `<main id="main"><section class="hero"><div class="hero-orb" aria-hidden="true"></div><div class="hero-copy"><p class="eyebrow">Software Engineer</p><h1>Hey, I’m <span>nemo1st</span><i>👋</i></h1><p>Web開発から低レイヤー・データ構造解析、開発自動化まで。仕組みを深掘りしてハックするのが好きです。</p><div class="hero-actions"><a class="button button-primary" href="${sitePath("/blog/")}">Read the blog</a><a class="button" href="${sitePath("/about/")}">About me</a></div></div></section><div class="home-content container"><section class="latest-articles">${sectionHeading("Latest articles", "/blog/", "もっと見る")}${featured ? featuredPost(featured) : '<div class="empty">公開済みの記事はまだありません。</div>'}${rest.length ? `<div class="latest-list">${rest.slice(0, 3).map(latestPost).join("")}</div>` : ""}</section><section id="shorts">${sectionHeading("Shorts")}${shortList()}</section><section>${sectionHeading("Talks", "/talks/", "すべての登壇")}${emptyTimeline()}</section></div></main>`;
   await writePage("index.html", layout({ title: SITE_NAME, description: "nemo1stのソフトウェアエンジニアリングノート。", pathname: "/", body: homeBody }));
 
   const blogBody = `<main id="main"><section class="page-banner"><div><h1>Blog</h1><p>読んだ仕様と、手を動かした記録を置いています。</p></div></section><section class="blog-shell container"><div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-tab="blog">Blog</button><button role="tab" aria-selected="false" data-tab="shorts">Shorts</button></div><div data-panel="blog">${posts.length ? `<div class="post-grid">${posts.map(postCard).join("")}</div>` : '<div class="empty">公開済みの記事はまだありません。</div>'}</div><div data-panel="shorts" id="shorts" hidden>${shortList()}</div></section></main>`;
