@@ -77,19 +77,14 @@
     const items = [...interview.querySelectorAll("[data-interview-item]")];
     const skip = interview.querySelector("[data-interview-skip]");
     const ending = interview.querySelector("[data-interview-end]");
-    const originals = new Map(items.map((item) => {
-      const target = item.querySelector("[data-interview-text]");
-      return [item, target?.textContent || ""];
-    }));
+    const textTargets = [...interview.querySelectorAll("[data-interview-text]")];
+    const originals = new Map(textTargets.map((target) => [target, target.textContent || ""]));
     let cancelled = false;
     const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
     const showAll = () => {
       cancelled = true;
-      items.forEach((item) => {
-        item.hidden = false;
-        const target = item.querySelector("[data-interview-text]");
-        if (target) target.textContent = originals.get(item);
-      });
+      items.forEach((item) => { item.hidden = false; });
+      textTargets.forEach((target) => { target.textContent = originals.get(target); });
       ending.hidden = false;
       skip.hidden = true;
     };
@@ -98,15 +93,16 @@
       showAll();
     } else {
       items.forEach((item) => { item.hidden = true; });
+      textTargets.forEach((target) => { target.textContent = ""; });
       ending.hidden = true;
       skip.addEventListener("click", showAll);
       (async () => {
         for (const item of items) {
           if (cancelled) return;
           item.hidden = false;
-          const target = item.querySelector("[data-interview-text]");
-          if (target) {
-            const full = originals.get(item);
+          const targets = [...item.querySelectorAll("[data-interview-text]")];
+          for (const target of targets) {
+            const full = originals.get(target);
             const text = document.createTextNode("");
             const cursor = document.createElement("span");
             cursor.className = "typing-cursor";
