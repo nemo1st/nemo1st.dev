@@ -11,6 +11,13 @@ const CUSTOM_DOMAIN = (process.env.CUSTOM_DOMAIN || "").trim();
 const SITE_NAME = "nemo1st.dev";
 const GITHUB_URL = "https://github.com/nemo1st";
 const SHORTS = [
+  {
+    title: "作ったものを誰かが使ってくれている",
+    date: "2026-09-04",
+    body: "趣味で運営しているファンサイトを、今日は大規模アップデートしました。普段は過去30分で7人ほど、今日は12人前後のアクティブユーザーが続いています。コンテンツ運営は苦労も多いですが、自分の作ったものを大勢の人に楽しんでもらえていると思うと、やっぱり嬉しいです。表には出せない制作物が多いぶん、こういう数字を見ると少し報われた気持ちになります。",
+    image: "/assets/shorts/fansite-active-users.png",
+    imageAlt: "過去30分のアクティブユーザー数が12人と表示されたアクセス解析画面",
+  },
   { title: "Markdownをpushすると記事ページができる", date: "2026-09-03", body: "content/blog に原稿を置いてpushすると、Vercelが静的HTML・RSS・サイトマップをまとめて生成・公開します。" },
   { title: "下書きもGitHubで管理する", date: "2026-09-03", body: "Front Matter の draft を true にすれば、履歴は残したまま公開対象から外せます。" },
 ];
@@ -134,7 +141,7 @@ function thumbnail(post, index = 0) { const source = post.thumbnail || `/assets/
 function postCard(post, index = 0) { return `<article class="post-card"><a class="post-thumb" href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}" tabindex="-1" aria-hidden="true"><img src="${thumbnail(post, index)}" alt="" loading="lazy"></a><div class="post-content"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><h3><a href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</div></article>`; }
 function featuredPost(post) { return `<article class="featured-post"><div class="featured-copy"><div class="featured-meta"><time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time><span>Feature</span></div><h3><a href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.description)}</p>${tagsHtml(post.tags)}</div><a class="featured-thumb" href="${sitePath(`/blog/${encodeURIComponent(post.slug)}/`)}" tabindex="-1" aria-hidden="true"><img src="${thumbnail(post)}" alt=""></a></article>`; }
 function sectionHeading(label, href = "", linkLabel = "") { return `<div class="section-heading"><h2>${label}</h2>${href ? `<a href="${sitePath(href)}">${linkLabel} ${icon("arrow-right")}</a>` : ""}</div>`; }
-function shortList(items = SHORTS) { return `<div class="short-list">${items.map((item, i) => `<article class="short-item"><img class="short-avatar" src="${sitePath("/assets/avatar.jpeg")}" alt="" width="40" height="40"><div><div class="short-head"><div><strong>nemo1st</strong><h3>${escapeHtml(item.title)}</h3></div><time datetime="${item.date}">${formatDate(item.date)}</time></div><p>${escapeHtml(item.body)}</p>${i === 0 ? '<span class="thread-button">スレッドを開く <b>1</b></span>' : ""}</div></article>`).join("")}</div>`; }
+function shortList(items = SHORTS) { return `<div class="short-list">${items.map((item, i) => `<article class="short-item"><img class="short-avatar" src="${sitePath("/assets/avatar.jpeg")}" alt="" width="40" height="40"><div><div class="short-head"><div><strong>nemo1st</strong><h3>${escapeHtml(item.title)}</h3></div><time datetime="${item.date}">${formatDate(item.date)}</time></div><p>${escapeHtml(item.body)}</p>${item.image ? `<img class="short-image" src="${sitePath(item.image)}" alt="${escapeHtml(item.imageAlt || "")}" loading="lazy">` : ""}${i === 0 ? '<span class="thread-button">スレッドを開く <b>1</b></span>' : ""}</div></article>`).join("")}</div>`; }
 function emptyTimeline() { return `<div class="timeline"><div class="timeline-year">Soon</div><div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-card"><p class="timeline-kicker">Talks archive</p><h3>登壇記録を準備しています</h3><p>公開できる資料やイベントの記録を、ここへ時系列で追加していきます。</p></div></div></div>`; }
 
 async function writePage(relative, html) { const target = path.join(DIST, relative); await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html, "utf8"); }
