@@ -233,8 +233,8 @@
     let frame = 0;
     let finished = !intro || !introCanvas || reducedMotion.matches;
     const startedAt = performance.now();
-    const sequenceDuration = 2400;
-    const exitDuration = 600;
+    const sequenceDuration = 5200;
+    const exitDuration = 800;
     const finishIntro = () => {
       if (finished) return;
       finished = true;
