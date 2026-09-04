@@ -227,7 +227,7 @@ img{max-width:100%}
 /* Refined loading wordmark */
 .site-intro .intro-brand{align-content:center;justify-items:center;padding-inline:clamp(1rem,4vw,3rem)}
 .site-intro .intro-brand .hero-orbit,.site-intro .intro-brand::before,.site-intro .intro-brand::after{display:none}
-.site-intro .intro-brand h1{position:relative;z-index:2;display:inline-flex;align-items:flex-start;max-width:100%;margin:0;font-family:"Helvetica Neue",Arial,var(--font-sans);font-size:clamp(4.75rem,9vw,8.75rem);font-weight:720;line-height:.72;letter-spacing:-.09em;text-transform:lowercase}
+.site-intro .intro-brand h1{position:relative;z-index:2;display:inline-flex;align-items:flex-start;max-width:100%;margin:0;font-family:"Helvetica Neue",Arial,var(--font-sans);font-size:clamp(4.75rem,9vw,8.75rem);font-weight:720;line-height:.72;letter-spacing:-.09em;text-transform:none}
 .site-intro .intro-brand h1 span,.site-intro .intro-brand h1 b{display:inline-flex;margin:0;color:var(--intro-ivory);-webkit-text-stroke:0;text-shadow:none}
 .site-intro .intro-brand h1 b{margin:.05em 0 0 .14em;font-size:.255em;font-weight:700;line-height:1;letter-spacing:.035em;color:var(--intro-blue-light)}
 .site-intro .intro-logo-glyph::after{display:none}

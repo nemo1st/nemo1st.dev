@@ -105,7 +105,7 @@
         });
         return word;
       };
-      introLogo.replaceChildren(makeLogoWord("span", "NEMO"), makeLogoWord("b", "1ST"));
+      introLogo.replaceChildren(makeLogoWord("span", "Nemo"), makeLogoWord("b", "1st"));
     }
     const skipIntro = document.querySelector("[data-intro-skip]");
     if (skipIntro) skipIntro.textContent = "Bypass sequence";
