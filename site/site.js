@@ -233,12 +233,14 @@
     let frame = 0;
     let finished = !intro || !introCanvas || reducedMotion.matches;
     const startedAt = performance.now();
+    const sequenceDuration = 2400;
+    const exitDuration = 600;
     const finishIntro = () => {
       if (finished) return;
       finished = true;
       intro.classList.add("is-leaving");
       document.body.classList.remove("intro-running");
-      window.setTimeout(() => { introScene?.destroy(); intro.remove(); }, 950);
+      window.setTimeout(() => { introScene?.destroy(); intro.remove(); }, exitDuration + 40);
     };
     if (finished) intro?.remove(); else document.body.classList.add("intro-running");
     const stageLogs = stageSpecs.map((stage) => stage.log);
@@ -282,7 +284,7 @@
     let lastIntroDraw = -Infinity;
     const draw = (now) => {
       if (!finished) {
-        const progress = Math.min(1, (now - startedAt) / 8200);
+        const progress = Math.min(1, (now - startedAt) / sequenceDuration);
         const activeStage = Math.min(introSteps.length - 1, Math.floor(progress * introSteps.length));
         animateIntroLogo(progress);
         if (now - lastIntroDraw >= 32) {
