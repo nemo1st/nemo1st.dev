@@ -25,6 +25,9 @@
 
   const setupHomeMotion = () => {
     const intro = document.querySelector("[data-site-intro]");
+    const paletteParam = new URLSearchParams(location.search).get("palette") || "01";
+    const paletteId = /^0[1-9]$|^10$/.test(paletteParam) ? paletteParam : "01";
+    if (intro) intro.dataset.palette = paletteId;
     const introCanvas = document.querySelector("[data-intro-canvas]");
     const introProgress = document.querySelector("[data-intro-progress]");
     const introState = document.querySelector("[data-intro-state]");
@@ -76,6 +79,7 @@
       uniform vec2 pointer;
       uniform float time;
       uniform float reveal;
+      uniform vec3 accent;
 
       float smin(float a,float b,float k){
         float h=clamp(.5+.5*(b-a)/k,0.,1.);
@@ -120,16 +124,16 @@
         vec3 background=vec3(.004+.006*max(0.,1.-length(p)*.42));
         vec3 ink=vec3(.009,.011,.012);
         ink+=light*vec3(.24,.29,.31);
-        ink+=backLight*vec3(.025,.12,.16);
-        ink+=oil*vec3(.025,.045,.055);
+        ink+=backLight*accent*.18;
+        ink+=oil*accent*.07;
         vec3 color=mix(background,ink,body);
-        color+=rim*vec3(.018,.07,.09)*(.28+.72*body);
+        color+=rim*accent*.1*(.28+.72*body);
         color+=vec3((random(gl_FragCoord.xy+time)-.5)/255.);
         color*=smoothstep(0.,.18,reveal);
         gl_FragColor=vec4(color,1.);
       }`;
 
-    const makeScene = (canvas, maxDpr = 1.8) => {
+    const makeScene = (canvas, maxDpr = 1.8, accent = [.47,.64,.72]) => {
       const gl = canvas.getContext("webgl", { alpha: false, antialias: false, powerPreference: "high-performance" });
       if (!gl) return null;
       const compile = (type, source) => {
@@ -156,6 +160,7 @@
         pointer: gl.getUniformLocation(program, "pointer"),
         time: gl.getUniformLocation(program, "time"),
         reveal: gl.getUniformLocation(program, "reveal"),
+        accent: gl.getUniformLocation(program, "accent"),
       };
       let targetX = 0;
       let targetY = 0;
@@ -175,6 +180,7 @@
           gl.uniform2f(uniforms.pointer, currentX, currentY);
           gl.uniform1f(uniforms.time, now * .001);
           gl.uniform1f(uniforms.reveal, revealAmount);
+          gl.uniform3f(uniforms.accent, accent[0], accent[1], accent[2]);
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         },
         destroy() { gl.deleteBuffer(buffer); gl.deleteProgram(program); },
@@ -183,7 +189,10 @@
 
     let introScene;
     try {
-      introScene = makeScene(introCanvas, innerWidth < 640 ? .72 : .9);
+      const accentHex = getComputedStyle(intro).getPropertyValue("--intro-blue-light").trim();
+      const accentMatch = accentHex.match(/^#([0-9a-f]{6})$/i);
+      const accent = accentMatch ? [0,2,4].map((offset) => parseInt(accentMatch[1].slice(offset, offset + 2), 16) / 255) : undefined;
+      introScene = makeScene(introCanvas, innerWidth < 640 ? .72 : .9, accent);
     } catch (error) {
       console.warn("Organic WebGL scene unavailable", error);
     }
