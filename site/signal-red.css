@@ -93,7 +93,7 @@
 /* Shared interior page headers and controls. */
 .page-banner{padding:3rem max(1rem,calc((100% - var(--width-home))/2));background:var(--signal-panel);border-bottom:1px solid #5b1a22;text-align:left}
 .page-banner h1{color:var(--signal-white);font-size:clamp(3rem,8vw,5rem);line-height:1;letter-spacing:-.065em}
-.page-banner h1::before{content:"/ ";color:var(--signal-red);font-weight:400}
+.page-banner h1::before{display:inline-block;margin-right:.25em;color:var(--signal-red);font-family:var(--font-mono);font-size:.72em;font-weight:400;letter-spacing:-.08em;content:"|>"}
 .page-banner p{max-width:42rem;margin:1.2rem 0 0;color:#e7dfe0;font-size:1rem}
 .tabs{width:100%;margin:0 0 2rem;padding:0;border-width:0 0 1px;background:transparent}
 .tabs button{width:auto;min-width:8rem;padding:1rem 1.5rem;border-right:1px solid var(--border-default);font-family:var(--font-mono);font-size:.875rem}
@@ -109,7 +109,7 @@
 .article-header>img{height:auto;max-height:25rem;margin-bottom:2rem;border:1px solid var(--border-default)}
 .article-header>p{line-height:1.9}
 .article-body h2{padding-bottom:.65rem;border-bottom:1px solid var(--border-default)}
-.article-body h2::before{content:"/ ";color:var(--color-accent);font-family:var(--font-mono);font-weight:400}
+.article-body h2::before{display:inline-block;margin-right:.25em;color:var(--color-accent);font-family:var(--font-mono);font-size:.8em;font-weight:400;letter-spacing:-.08em;content:"|>"}
 .article-body h3{border-left:2px solid var(--color-accent);padding-left:.75rem}
 .article-body code{color:var(--text-primary)}
 .article-body figure{margin:2rem 0;min-width:0}
