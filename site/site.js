@@ -26,7 +26,7 @@
   const setupHomeMotion = () => {
     const intro = document.querySelector("[data-site-intro]");
     const paletteParam = new URLSearchParams(location.search).get("palette") || "01";
-    const paletteId = /^(0[1-9]|1[01])$/.test(paletteParam) ? paletteParam : "01";
+    const paletteId = /^(0[1-9]|1[0-2])$/.test(paletteParam) ? paletteParam : "01";
     if (intro) intro.dataset.palette = paletteId;
     const introCanvas = document.querySelector("[data-intro-canvas]");
     const introProgress = document.querySelector("[data-intro-progress]");
