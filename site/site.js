@@ -5,7 +5,10 @@
   const menuButton = document.querySelector("[data-menu-toggle]");
   const nav = document.querySelector("[data-site-nav]");
   const preferredDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const currentTheme = () => localStorage.getItem("nemo-theme") || "system";
+  const currentTheme = () => {
+    try { return localStorage.getItem("nemo-theme") || "dark"; }
+    catch { return "dark"; }
+  };
   const iconPath = (name) => {
     const current = themeButton?.querySelector("img")?.getAttribute("src") || "";
     return current.replace(/[^/]+\.svg$/, `${name}.svg`);
@@ -19,14 +22,15 @@
   themeButton?.addEventListener("click", () => {
     const themes = ["system", "light", "dark"];
     const next = themes[(themes.indexOf(currentTheme()) + 1) % themes.length];
-    localStorage.setItem("nemo-theme", next); applyTheme(next);
+    try { localStorage.setItem("nemo-theme", next); } catch {}
+    applyTheme(next);
   });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (currentTheme() === "system") applyTheme("system"); });
 
   const setupHomeMotion = () => {
     const intro = document.querySelector("[data-site-intro]");
-    const paletteParam = new URLSearchParams(location.search).get("palette") || "01";
-    const paletteId = /^(0[1-9]|1[0-2])$/.test(paletteParam) ? paletteParam : "01";
+    const paletteParam = new URLSearchParams(location.search).get("palette") || "11";
+    const paletteId = /^(0[1-9]|1[0-2])$/.test(paletteParam) ? paletteParam : "11";
     if (intro) intro.dataset.palette = paletteId;
     const introCanvas = document.querySelector("[data-intro-canvas]");
     const introProgress = document.querySelector("[data-intro-progress]");
