@@ -30,15 +30,18 @@
     const introState = document.querySelector("[data-intro-state]");
     const introLog = document.querySelector("[data-intro-log]");
     const introMeter = document.querySelector("[data-intro-meter]");
-    const introActiveName = document.querySelector("[data-intro-active-name]");
-    const introActiveStatus = document.querySelector("[data-intro-active-status]");
-    const introActiveDetail = document.querySelector("[data-intro-active-detail]");
+    const introOsMark = document.querySelector("[data-intro-os-mark]");
+    const osDrawPaths = [...document.querySelectorAll(".os-draw circle,.os-draw path")];
+    const osGuides = [...document.querySelectorAll(".os-guides circle,.os-guides line")];
+    const osNodes = [...document.querySelectorAll(".os-nodes circle")];
+    const osFinal = document.querySelector(".os-final");
+    const osCaption = document.querySelector(".intro-os-caption");
     const introSteps = [...document.querySelectorAll("[data-intro-step]")];
     const stageSpecs = [
-      { name: "SIGNAL", detail: "identity handshake", log: "SIGNAL / Identity handshake accepted." },
-      { name: "MORPH", detail: "geometric mark construction", log: "MORPH / Plotting geometric construction field." },
-      { name: "ARCHIVE", detail: "memory constellation", log: "ARCHIVE / Mapping memory constellation." },
-      { name: "GATE", detail: "interface release", log: "GATE / Releasing interface threshold." },
+      { name: "IDENT", detail: "owner signature verified", log: "IDENT / Nemo 1st signature verified." },
+      { name: "PLOT", detail: "construction grid", log: "PLOT / Mapping N/OS construction field." },
+      { name: "KERNEL", detail: "joining signal nodes", log: "KERNEL / Joining signal nodes." },
+      { name: "SYSTEM", detail: "locking N/OS core", log: "SYSTEM / Locking operating system mark." },
     ];
     introSteps.forEach((step, index) => {
       const spec = stageSpecs[index];
@@ -52,61 +55,16 @@
     const flowLabel = intro?.querySelector(".intro-interface .hero-panel-label span");
     const startupTitle = intro?.querySelector(".intro-startup-note span");
     const startupDetail = intro?.querySelector(".intro-startup-note p");
-    if (identityLabel) identityLabel.textContent = "NEMO SIGNAL ARCHIVE";
-    if (identityNode) identityNode.textContent = "NODE.01";
-    if (flowLabel) flowLabel.textContent = "FORMATION SEQUENCE / 04";
-    if (startupTitle) startupTitle.textContent = "IDENTITY RECONSTRUCTION / PHASE 01";
-    if (startupDetail) startupDetail.textContent = "PRIVATE SIGNAL NODE: NEMO1ST / MEMORY ACCESS: LOCAL ONLY";
+    if (identityLabel) identityLabel.textContent = "NEMO IDENTITY / VERIFIED";
+    if (identityNode) identityNode.textContent = "USER.01";
+    if (flowLabel) flowLabel.textContent = "N/OS FORMATION / 04";
+    if (startupTitle) startupTitle.textContent = "SIGNATURE VERIFIED / SESSION 01";
+    if (startupDetail) startupDetail.textContent = "OWNER: NEMO1ST / SYSTEM IMAGE: PENDING";
     const introLogo = intro?.querySelector(".intro-brand h1");
-    const introLogoGlyphs = [];
-    let introBlueprint;
-    let introBlueprintLines = [];
-    let introBlueprintGuides = [];
-    if (introLogo) {
-      introLogo.setAttribute("aria-label", "nemo1st");
-      introBlueprint = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      introBlueprint.classList.add("intro-blueprint");
-      introBlueprint.setAttribute("viewBox", "0 0 1000 620");
-      introBlueprint.setAttribute("preserveAspectRatio", "xMidYMid meet");
-      introBlueprint.setAttribute("aria-hidden", "true");
-      introBlueprint.innerHTML = `
-        <g class="blueprint-guides">
-          <circle cx="500" cy="310" r="272" pathLength="1"/><circle cx="500" cy="310" r="184" pathLength="1"/><circle cx="500" cy="310" r="82" pathLength="1"/>
-          <line x1="50" y1="160" x2="950" y2="160" pathLength="1"/><line x1="50" y1="310" x2="950" y2="310" pathLength="1"/><line x1="50" y1="460" x2="950" y2="460" pathLength="1"/>
-          <line x1="500" y1="28" x2="500" y2="592" pathLength="1"/><line x1="110" y1="84" x2="890" y2="536" pathLength="1"/><line x1="110" y1="536" x2="890" y2="84" pathLength="1"/>
-        </g>
-        <g class="blueprint-structure">
-          <rect x="126" y="176" width="748" height="268" pathLength="1"/>
-          <line x1="126" y1="444" x2="304" y2="176" pathLength="1"/><line x1="148" y1="444" x2="326" y2="176" pathLength="1"/><line x1="170" y1="444" x2="348" y2="176" pathLength="1"/>
-          <line x1="304" y1="176" x2="482" y2="444" pathLength="1"/><line x1="326" y1="176" x2="504" y2="444" pathLength="1"/><line x1="348" y1="176" x2="526" y2="444" pathLength="1"/>
-          <line x1="474" y1="444" x2="652" y2="176" pathLength="1"/><line x1="496" y1="444" x2="674" y2="176" pathLength="1"/><line x1="518" y1="444" x2="696" y2="176" pathLength="1"/>
-          <line x1="652" y1="176" x2="830" y2="444" pathLength="1"/><line x1="674" y1="176" x2="852" y2="444" pathLength="1"/><line x1="696" y1="176" x2="874" y2="444" pathLength="1"/>
-        </g>`;
-      introLogo.before(introBlueprint);
-      introBlueprintLines = [...introBlueprint.querySelectorAll(".blueprint-structure line,.blueprint-structure rect")];
-      introBlueprintGuides = [...introBlueprint.querySelectorAll(".blueprint-guides circle,.blueprint-guides line")];
-      introBlueprintLines.forEach((line) => {
-        line.style.strokeDasharray = "1";
-        line.style.strokeDashoffset = "1";
-      });
-      introBlueprintGuides.forEach((guide) => { guide.style.opacity = "0"; });
-      const makeLogoWord = (tagName, text) => {
-        const word = document.createElement(tagName);
-        word.className = "intro-logo-word";
-        word.setAttribute("aria-hidden", "true");
-        [...text].forEach((character) => {
-          const glyph = document.createElement("i");
-          glyph.className = "intro-logo-glyph";
-          glyph.textContent = character;
-          glyph.dataset.glyph = String(introLogoGlyphs.length);
-          glyph.dataset.char = character;
-          introLogoGlyphs.push(glyph);
-          word.append(glyph);
-        });
-        return word;
-      };
-      introLogo.replaceChildren(makeLogoWord("span", "Nemo"), makeLogoWord("b", "1st"));
-    }
+    introLogo?.setAttribute("aria-label", "Nemo 1st");
+    osDrawPaths.forEach((path) => { path.style.strokeDasharray = "1"; path.style.strokeDashoffset = "1"; });
+    osGuides.forEach((guide) => { guide.style.opacity = "0"; });
+    osNodes.forEach((node) => { node.style.opacity = "0"; });
     const skipIntro = document.querySelector("[data-intro-skip]");
     if (skipIntro) skipIntro.textContent = "Bypass sequence";
     if (!intro || !introCanvas) return;
@@ -244,41 +202,36 @@
     };
     if (finished) intro?.remove(); else document.body.classList.add("intro-running");
     const stageLogs = stageSpecs.map((stage) => stage.log);
-    let logoLocked = false;
+    let osLocked = false;
     const clamp01 = (value) => Math.max(0, Math.min(1, value));
-    const animateIntroLogo = (progress) => {
-      if (!introLogoGlyphs.length) return;
-      introBlueprintLines.forEach((line, index) => {
-        const drawn = clamp01((progress - index * .008) / .43);
-        line.style.strokeDashoffset = String(1 - drawn);
+    const animateOsMark = (progress) => {
+      if (!introOsMark) return;
+      const guideReveal = clamp01((progress - .04) / .2);
+      const guideFade = 1 - clamp01((progress - .72) / .2);
+      osGuides.forEach((guide, index) => {
+        guide.style.opacity = String(guideReveal * guideFade * (.22 + (index % 3) * .08));
       });
-      introBlueprintGuides.forEach((guide, index) => {
-        guide.style.opacity = String(clamp01((progress - index * .012) / .24));
+      osDrawPaths.forEach((path, index) => {
+        const drawn = clamp01((progress - (.16 + index * .1)) / .42);
+        path.style.strokeDashoffset = String(1 - drawn);
       });
-      if (introBlueprint) {
-        const fade = 1 - clamp01((progress - .68) / .17);
-        introBlueprint.style.opacity = String(fade);
-        introBlueprint.style.setProperty("--blueprint-scale", String(.94 + clamp01(progress / .6) * .06));
+      osNodes.forEach((node, index) => {
+        const amount = clamp01((progress - (.4 + index * .055)) / .12);
+        node.style.opacity = String(amount);
+        node.style.transform = `scale(${(.25 + amount * .75).toFixed(3)})`;
+      });
+      const solid = clamp01((progress - .7) / .14);
+      if (osFinal) {
+        osFinal.style.opacity = String(solid);
+        osFinal.style.transform = `scale(${(.96 + solid * .04).toFixed(3)})`;
       }
-      const origins = [-185,-128,-62,18,88,148,205];
-      introLogoGlyphs.forEach((glyph, index) => {
-        const start = .2 + index * .025;
-        const end = .64 + index * .012;
-        const amount = clamp01((progress - start) / (end - start));
-        const formed = amount * amount * (3 - 2 * amount);
-        const construction = 1 - formed;
-        const x = origins[index] * construction;
-        const y = (index % 2 ? -138 : 138) * construction;
-        const rotation = (index % 2 ? -9 : 9) * construction;
-        const skew = (index % 2 ? 24 : -24) * construction;
-        const scaleX = .72 + formed * .28;
-        const scaleY = 1.62 - formed * .62;
-        glyph.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) rotate(${rotation.toFixed(2)}deg) skewX(${skew.toFixed(2)}deg) scale(${scaleX.toFixed(3)},${scaleY.toFixed(3)})`;
-        glyph.style.opacity = String(.08 + formed * .92);
-      });
-      if (!logoLocked && progress > .72) {
-        logoLocked = true;
-        introLogo?.classList.add("is-formed");
+      if (osCaption) {
+        osCaption.style.opacity = String(clamp01((progress - .76) / .12));
+        osCaption.style.transform = `translate(-50%,${((1 - clamp01((progress - .76) / .12)) * 10).toFixed(2)}px)`;
+      }
+      if (!osLocked && progress > .84) {
+        osLocked = true;
+        introOsMark.classList.add("is-locked");
       }
     };
     let lastIntroDraw = -Infinity;
@@ -286,7 +239,7 @@
       if (!finished) {
         const progress = Math.min(1, (now - startedAt) / sequenceDuration);
         const activeStage = Math.min(introSteps.length - 1, Math.floor(progress * introSteps.length));
-        animateIntroLogo(progress);
+        animateOsMark(progress);
         if (now - lastIntroDraw >= 32) {
           introScene?.setPointer(Math.sin(now * .00031) * .22, Math.cos(now * .00027) * .16);
           introScene?.draw(now, progress);
@@ -298,12 +251,8 @@
           step.classList.toggle("is-complete", index < activeStage || progress >= 1);
           if (status) status.textContent = index < activeStage || progress >= 1 ? "LOCK" : index === activeStage ? "LIVE" : "IDLE";
         });
-        const activeStep = introSteps[activeStage];
-        if (introActiveName) introActiveName.textContent = progress >= 1 ? "ARCHIVE OPEN" : activeStep?.querySelector("span")?.textContent || "SIGNAL";
-        if (introActiveDetail) introActiveDetail.textContent = progress >= 1 ? "all nodes aligned" : activeStep?.querySelector("small")?.textContent || "identity handshake";
-        if (introActiveStatus) introActiveStatus.textContent = progress >= 1 ? "ENTER" : "LIVE";
-        if (introState) introState.textContent = progress >= 1 ? "ALIGNED" : `PHASE / 0${activeStage + 1}`;
-        if (introLog) introLog.textContent = progress >= 1 ? "ALL NODES ALIGNED / Entering archive." : stageLogs[activeStage];
+        if (introState) introState.textContent = progress >= 1 ? "SYSTEM READY" : `PHASE / 0${activeStage + 1}`;
+        if (introLog) introLog.textContent = progress >= 1 ? "N/OS ONLINE / Entering archive." : stageLogs[activeStage];
         if (introMeter) introMeter.style.width = `${progress * 100}%`;
         if (introProgress) introProgress.textContent = `${String(Math.round(progress * 100)).padStart(3, "0")}%`;
         if (progress >= 1) finishIntro();
