@@ -5,7 +5,10 @@
   const menuButton = document.querySelector("[data-menu-toggle]");
   const nav = document.querySelector("[data-site-nav]");
   const preferredDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const currentTheme = () => localStorage.getItem("nemo-theme") || "system";
+  const currentTheme = () => {
+    try { return localStorage.getItem("nemo-theme") || "dark"; }
+    catch { return "dark"; }
+  };
   const iconPath = (name) => {
     const current = themeButton?.querySelector("img")?.getAttribute("src") || "";
     return current.replace(/[^/]+\.svg$/, `${name}.svg`);
@@ -19,26 +22,33 @@
   themeButton?.addEventListener("click", () => {
     const themes = ["system", "light", "dark"];
     const next = themes[(themes.indexOf(currentTheme()) + 1) % themes.length];
-    localStorage.setItem("nemo-theme", next); applyTheme(next);
+    try { localStorage.setItem("nemo-theme", next); } catch {}
+    applyTheme(next);
   });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (currentTheme() === "system") applyTheme("system"); });
 
   const setupHomeMotion = () => {
     const intro = document.querySelector("[data-site-intro]");
+    const paletteParam = new URLSearchParams(location.search).get("palette") || "11";
+    const paletteId = /^(0[1-9]|1[0-2])$/.test(paletteParam) ? paletteParam : "11";
+    if (intro) intro.dataset.palette = paletteId;
     const introCanvas = document.querySelector("[data-intro-canvas]");
     const introProgress = document.querySelector("[data-intro-progress]");
     const introState = document.querySelector("[data-intro-state]");
     const introLog = document.querySelector("[data-intro-log]");
     const introMeter = document.querySelector("[data-intro-meter]");
-    const introActiveName = document.querySelector("[data-intro-active-name]");
-    const introActiveStatus = document.querySelector("[data-intro-active-status]");
-    const introActiveDetail = document.querySelector("[data-intro-active-detail]");
+    const introOsMark = document.querySelector("[data-intro-os-mark]");
+    const osDrawPaths = [...document.querySelectorAll(".os-draw circle,.os-draw path")];
+    const osGuides = [...document.querySelectorAll(".os-guides circle,.os-guides line")];
+    const osNodes = [...document.querySelectorAll(".os-nodes circle")];
+    const osFinal = document.querySelector(".os-final");
+    const osCaption = document.querySelector(".intro-os-caption");
     const introSteps = [...document.querySelectorAll("[data-intro-step]")];
     const stageSpecs = [
-      { name: "SIGNAL", detail: "identity handshake", log: "SIGNAL / Identity handshake accepted." },
-      { name: "MORPH", detail: "kinetic glyph forge", log: "MORPH / Forging kinetic glyph field." },
-      { name: "ARCHIVE", detail: "memory constellation", log: "ARCHIVE / Mapping memory constellation." },
-      { name: "GATE", detail: "interface release", log: "GATE / Releasing interface threshold." },
+      { name: "IDENT", detail: "owner signature verified", log: "IDENT / Nemo 1st signature verified." },
+      { name: "PLOT", detail: "construction grid", log: "PLOT / Mapping N/OS construction field." },
+      { name: "KERNEL", detail: "joining signal nodes", log: "KERNEL / Joining signal nodes." },
+      { name: "SYSTEM", detail: "locking N/OS core", log: "SYSTEM / Locking operating system mark." },
     ];
     introSteps.forEach((step, index) => {
       const spec = stageSpecs[index];
@@ -52,33 +62,16 @@
     const flowLabel = intro?.querySelector(".intro-interface .hero-panel-label span");
     const startupTitle = intro?.querySelector(".intro-startup-note span");
     const startupDetail = intro?.querySelector(".intro-startup-note p");
-    if (identityLabel) identityLabel.textContent = "NEMO SIGNAL ARCHIVE";
-    if (identityNode) identityNode.textContent = "NODE.01";
-    if (flowLabel) flowLabel.textContent = "FORMATION SEQUENCE / 04";
-    if (startupTitle) startupTitle.textContent = "IDENTITY RECONSTRUCTION / PHASE 01";
-    if (startupDetail) startupDetail.textContent = "PRIVATE SIGNAL NODE: NEMO1ST / MEMORY ACCESS: LOCAL ONLY";
+    if (identityLabel) identityLabel.textContent = "NEMO IDENTITY / VERIFIED";
+    if (identityNode) identityNode.textContent = "USER.01";
+    if (flowLabel) flowLabel.textContent = "N/OS FORMATION / 04";
+    if (startupTitle) startupTitle.textContent = "SIGNATURE VERIFIED / SESSION 01";
+    if (startupDetail) startupDetail.textContent = "OWNER: NEMO1ST / SYSTEM IMAGE: PENDING";
     const introLogo = intro?.querySelector(".intro-brand h1");
-    const introOrbit = intro?.querySelector(".intro-brand .hero-orbit");
-    const introLogoGlyphs = [];
-    if (introLogo) {
-      introLogo.setAttribute("aria-label", "nemo1st");
-      const makeLogoWord = (tagName, text) => {
-        const word = document.createElement(tagName);
-        word.className = "intro-logo-word";
-        word.setAttribute("aria-hidden", "true");
-        [...text].forEach((character) => {
-          const glyph = document.createElement("i");
-          glyph.className = "intro-logo-glyph";
-          glyph.textContent = character;
-          glyph.dataset.glyph = String(introLogoGlyphs.length);
-          glyph.dataset.char = character;
-          introLogoGlyphs.push(glyph);
-          word.append(glyph);
-        });
-        return word;
-      };
-      introLogo.replaceChildren(makeLogoWord("span", "NEMO"), makeLogoWord("b", "1ST"));
-    }
+    introLogo?.setAttribute("aria-label", "Nemo 1st");
+    osDrawPaths.forEach((path) => { path.style.strokeDasharray = "1"; path.style.strokeDashoffset = "1"; });
+    osGuides.forEach((guide) => { guide.style.opacity = "0"; });
+    osNodes.forEach((node) => { node.style.opacity = "0"; });
     const skipIntro = document.querySelector("[data-intro-skip]");
     if (skipIntro) skipIntro.textContent = "Bypass sequence";
     if (!intro || !introCanvas) return;
@@ -90,6 +83,7 @@
       uniform vec2 pointer;
       uniform float time;
       uniform float reveal;
+      uniform vec3 accent;
 
       float smin(float a,float b,float k){
         float h=clamp(.5+.5*(b-a)/k,0.,1.);
@@ -134,16 +128,16 @@
         vec3 background=vec3(.004+.006*max(0.,1.-length(p)*.42));
         vec3 ink=vec3(.009,.011,.012);
         ink+=light*vec3(.24,.29,.31);
-        ink+=backLight*vec3(.025,.12,.16);
-        ink+=oil*vec3(.025,.045,.055);
+        ink+=backLight*accent*.18;
+        ink+=oil*accent*.07;
         vec3 color=mix(background,ink,body);
-        color+=rim*vec3(.018,.07,.09)*(.28+.72*body);
+        color+=rim*accent*.1*(.28+.72*body);
         color+=vec3((random(gl_FragCoord.xy+time)-.5)/255.);
         color*=smoothstep(0.,.18,reveal);
         gl_FragColor=vec4(color,1.);
       }`;
 
-    const makeScene = (canvas, maxDpr = 1.8) => {
+    const makeScene = (canvas, maxDpr = 1.8, accent = [.47,.64,.72]) => {
       const gl = canvas.getContext("webgl", { alpha: false, antialias: false, powerPreference: "high-performance" });
       if (!gl) return null;
       const compile = (type, source) => {
@@ -170,6 +164,7 @@
         pointer: gl.getUniformLocation(program, "pointer"),
         time: gl.getUniformLocation(program, "time"),
         reveal: gl.getUniformLocation(program, "reveal"),
+        accent: gl.getUniformLocation(program, "accent"),
       };
       let targetX = 0;
       let targetY = 0;
@@ -189,6 +184,7 @@
           gl.uniform2f(uniforms.pointer, currentX, currentY);
           gl.uniform1f(uniforms.time, now * .001);
           gl.uniform1f(uniforms.reveal, revealAmount);
+          gl.uniform3f(uniforms.accent, accent[0], accent[1], accent[2]);
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         },
         destroy() { gl.deleteBuffer(buffer); gl.deleteProgram(program); },
@@ -197,7 +193,10 @@
 
     let introScene;
     try {
-      introScene = makeScene(introCanvas, innerWidth < 640 ? .72 : .9);
+      const accentHex = getComputedStyle(intro).getPropertyValue("--intro-blue-light").trim();
+      const accentMatch = accentHex.match(/^#([0-9a-f]{6})$/i);
+      const accent = accentMatch ? [0,2,4].map((offset) => parseInt(accentMatch[1].slice(offset, offset + 2), 16) / 255) : undefined;
+      introScene = makeScene(introCanvas, innerWidth < 640 ? .72 : .9, accent);
     } catch (error) {
       console.warn("Organic WebGL scene unavailable", error);
     }
@@ -205,50 +204,55 @@
     let frame = 0;
     let finished = !intro || !introCanvas || reducedMotion.matches;
     const startedAt = performance.now();
+    const sequenceDuration = 5200;
+    const exitDuration = 800;
     const finishIntro = () => {
       if (finished) return;
       finished = true;
       intro.classList.add("is-leaving");
       document.body.classList.remove("intro-running");
-      window.setTimeout(() => { introScene?.destroy(); intro.remove(); }, 950);
+      window.setTimeout(() => { introScene?.destroy(); intro.remove(); }, exitDuration + 40);
     };
     if (finished) intro?.remove(); else document.body.classList.add("intro-running");
     const stageLogs = stageSpecs.map((stage) => stage.log);
-    let logoLocked = false;
-    const animateIntroLogo = (progress, now) => {
-      if (!introLogoGlyphs.length) return;
-      const viewportSpread = Math.min(innerWidth, innerHeight) * (innerWidth < 640 ? .09 : .14);
-      introLogoGlyphs.forEach((glyph, index) => {
-        const start = .02 + index * .02;
-        const end = .62 + index * .018;
-        const amount = Math.max(0, Math.min(1, (progress - start) / (end - start)));
-        const formed = amount * amount * (3 - 2 * amount);
-        const chaos = 1 - formed;
-        const seed = index * 1.73 + .8;
-        const angle = seed + progress * (Math.PI * (5.4 + index * .22));
-        const radius = viewportSpread * chaos * (.58 + (index % 3) * .2);
-        const x = Math.cos(angle) * radius + Math.sin(now * .004 + seed) * chaos * 18;
-        const y = Math.sin(angle * 1.13) * radius * .7 + Math.cos(now * .0032 + seed) * chaos * 14;
-        const rotation = chaos * (Math.sin(angle * .72) * 130 + (index % 2 ? 180 : -180));
-        const skew = chaos * Math.sin(angle * 1.4) * 28;
-        const scaleX = 1 + chaos * Math.sin(angle * .91) * .48;
-        const scaleY = 1 + chaos * Math.cos(angle * 1.17) * .36;
-        glyph.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) rotate(${rotation.toFixed(2)}deg) skewX(${skew.toFixed(2)}deg) scale(${scaleX.toFixed(3)},${scaleY.toFixed(3)})`;
-        glyph.style.opacity = String(Math.max(.12, .28 + formed * .72));
+    let osLocked = false;
+    const clamp01 = (value) => Math.max(0, Math.min(1, value));
+    const animateOsMark = (progress) => {
+      if (!introOsMark) return;
+      const guideReveal = clamp01((progress - .04) / .2);
+      const guideFade = 1 - clamp01((progress - .72) / .2);
+      osGuides.forEach((guide, index) => {
+        guide.style.opacity = String(guideReveal * guideFade * (.22 + (index % 3) * .08));
       });
-      const orbitChaos = 1 - Math.max(0, Math.min(1, (progress - .08) / .72));
-      if (introOrbit) introOrbit.style.transform = `translateY(-54%) rotate(${(-13 + orbitChaos * 690 + Math.sin(now * .003) * orbitChaos * 16).toFixed(2)}deg) scale(${(1 + orbitChaos * .22 * Math.sin(now * .005)).toFixed(3)})`;
-      if (!logoLocked && progress > .76) {
-        logoLocked = true;
-        introLogo?.classList.add("is-formed");
+      osDrawPaths.forEach((path, index) => {
+        const drawn = clamp01((progress - (.16 + index * .1)) / .42);
+        path.style.strokeDashoffset = String(1 - drawn);
+      });
+      osNodes.forEach((node, index) => {
+        const amount = clamp01((progress - (.4 + index * .055)) / .12);
+        node.style.opacity = String(amount);
+        node.style.transform = `scale(${(.25 + amount * .75).toFixed(3)})`;
+      });
+      const solid = clamp01((progress - .7) / .14);
+      if (osFinal) {
+        osFinal.style.opacity = String(solid);
+        osFinal.style.transform = `scale(${(.96 + solid * .04).toFixed(3)})`;
+      }
+      if (osCaption) {
+        osCaption.style.opacity = String(clamp01((progress - .76) / .12));
+        osCaption.style.transform = `translate(-50%,${((1 - clamp01((progress - .76) / .12)) * 10).toFixed(2)}px)`;
+      }
+      if (!osLocked && progress > .84) {
+        osLocked = true;
+        introOsMark.classList.add("is-locked");
       }
     };
     let lastIntroDraw = -Infinity;
     const draw = (now) => {
       if (!finished) {
-        const progress = Math.min(1, (now - startedAt) / 8200);
+        const progress = Math.min(1, (now - startedAt) / sequenceDuration);
         const activeStage = Math.min(introSteps.length - 1, Math.floor(progress * introSteps.length));
-        animateIntroLogo(progress, now);
+        animateOsMark(progress);
         if (now - lastIntroDraw >= 32) {
           introScene?.setPointer(Math.sin(now * .00031) * .22, Math.cos(now * .00027) * .16);
           introScene?.draw(now, progress);
@@ -260,12 +264,8 @@
           step.classList.toggle("is-complete", index < activeStage || progress >= 1);
           if (status) status.textContent = index < activeStage || progress >= 1 ? "LOCK" : index === activeStage ? "LIVE" : "IDLE";
         });
-        const activeStep = introSteps[activeStage];
-        if (introActiveName) introActiveName.textContent = progress >= 1 ? "ARCHIVE OPEN" : activeStep?.querySelector("span")?.textContent || "SIGNAL";
-        if (introActiveDetail) introActiveDetail.textContent = progress >= 1 ? "all nodes aligned" : activeStep?.querySelector("small")?.textContent || "identity handshake";
-        if (introActiveStatus) introActiveStatus.textContent = progress >= 1 ? "ENTER" : "LIVE";
-        if (introState) introState.textContent = progress >= 1 ? "ALIGNED" : `PHASE / 0${activeStage + 1}`;
-        if (introLog) introLog.textContent = progress >= 1 ? "ALL NODES ALIGNED / Entering archive." : stageLogs[activeStage];
+        if (introState) introState.textContent = progress >= 1 ? "SYSTEM READY" : `PHASE / 0${activeStage + 1}`;
+        if (introLog) introLog.textContent = progress >= 1 ? "N/OS ONLINE / Entering archive." : stageLogs[activeStage];
         if (introMeter) introMeter.style.width = `${progress * 100}%`;
         if (introProgress) introProgress.textContent = `${String(Math.round(progress * 100)).padStart(3, "0")}%`;
         if (progress >= 1) finishIntro();
